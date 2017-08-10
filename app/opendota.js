@@ -25,6 +25,7 @@ global.__settings = require('./../config/settings');
 program.command('getTIData <year>').alias('y')
        .description('Get Dota2 data from The International competition using OpenDota API')
        .option('-v, --verbose', 'Include verbose output')
+       .option('-t, --team <TEAM>', 'Restrict query to a specific team')
        .action(function(year, options){
 	 if (options.verbose) logger.level = 'DEBUG';
 	 if (year == null) {
@@ -36,7 +37,7 @@ program.command('getTIData <year>').alias('y')
 	   options.queryAPI = global.__settings.queryAPI;
 	   options.matchAPI = global.__settings.matchAPI;
 	   options.playerAPI = global.__settings.playerAPI;
-	   tiYear.getPlayerMatches(year, options).then(function(data){
+	   tiYear.getPlayerMatches(year, options, options.team).then(function(data){
 	     logger.debug("'playermatches' retrieved, processing for match data");
 	     return Promise.join(
 	       matchData.getMatches(utils.uniq(data.rows.map((x) => x.match_id)), options),

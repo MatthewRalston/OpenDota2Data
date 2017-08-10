@@ -2,8 +2,8 @@
 
 module.exports = function(logger, promise, request, process, querystring, prettyjson){
 
-    function sqlQuery(year){
-	return `SELECT
+    function sqlQuery(year, team){
+      var selection = `SELECT
     matches.match_id,
     matches.start_time,
     ((player_matches.player_slot < 128) = matches.radiant_win) win,
@@ -12,22 +12,26 @@ module.exports = function(logger, promise, request, process, querystring, pretty
     player_matches.account_id,
     heroes.localized_name,
     players.avatarfull,
-    leagues.name leaguename
-    FROM matches
+    leagues.name leaguename,
+    matches.radiant_team_name,
+    matches.dire_team_name`;
+      var from = ` FROM matches
     JOIN match_patch using(match_id)
     JOIN leagues using(leagueid)
     JOIN player_matches using(match_id)
     JOIN heroes on heroes.id = player_matches.hero_id
     LEFT JOIN notable_players ON notable_players.account_id = player_matches.account_id AND notable_players.locked_until = (SELECT MAX(locked_until) FROM notable_players)
     LEFT JOIN players ON players.account_id = player_matches.account_id
-    LEFT JOIN teams using(team_id)
-    WHERE TRUE
-    AND leagues.name = 'The International ${year}'
-    ORDER BY matches.match_id DESC NULLS LAST`;
+    LEFT JOIN teams using(team_id)`;
+      var where = ` WHERE TRUE AND leagues.name = 'The International ${year}'`;
+      if (team != null) {
+	where += ` AND (notable_players.team_name = '${team}' OR notable_players.team_tag = '${team}')`;
+      }
+      return selection + from + where + " ORDER BY matches.match_id DESC NULLS LAST";
     };
 
-    function getPlayerMatches(year, options){
-	var qString = querystring.stringify({sql: sqlQuery(year)});
+    function getPlayerMatches(year, options, team){
+	var qString = querystring.stringify({sql: sqlQuery(year, team)});
 	var uri = `${options.queryAPI}?${qString}`;
 	return new promise(function(resolve, reject){
             request.get({url: uri, json: true, headers: {"Content-Type": "application/json"}}, function(error, res, body){

@@ -1,0 +1,23 @@
+{
+    "test": {
+	"host": "foo",
+	"port": 1234,
+	"user": "bar",
+	"password": "baz",
+	"database": "forthelulz"
+    },
+    "development": {
+	"host": "foo",
+	"port": 1234,
+	"user": "bar",
+	"password": "baz",
+	"database": "forthelulz"
+    },
+    "production": {
+	"host": "foo",
+	"port": 1234,
+	"user": "bar",
+	"password": "baz",
+	"database": "forthelulz"
+    }
+}

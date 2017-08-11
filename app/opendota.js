@@ -13,7 +13,8 @@ const Type = require('type-of-is');
 const querystring = require('querystring');
 
 // Custom modules
-const logger = require('./loadLogger');
+var loadLog = require('./loadLogger');
+var logger = loadLog.log4js.getLogger('consoleLogger');
 const utils = require('./utils')(logger, Promise, fs, Type);
 const tiYear = require('./tiYear')(logger, Promise, request, process, querystring, prettyjson);
 const matchData = require('./matchData')(logger, Promise, retry, request, process);

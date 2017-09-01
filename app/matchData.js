@@ -1,6 +1,6 @@
 
 
-module.exports = function(logger, promise, retry, request, process){
+module.exports = function(logger, promise, retry, request){
 
 
 

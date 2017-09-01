@@ -21,9 +21,12 @@ logger.debug("Connecting to database with the following credentials", dbConfig);
 var database = require(path.join(global.__settings.rootDir, 'app/database'))(dbConfig, Promise);
 logger.debug("Testing database connection...");
 database.db.any("SELECT * FROM opendota_request LIMIT 1");
+// Configure job manager
+const pgString = `postgres://${dbConfig.user}:${dbConfig.password}@${dbConfig.host}/${dbConfig.database}`;
+var boss = require('pg-boss')(pgString);
+boss.on('error', logger.error);
 
-
-var routes = require(path.join(global.__settings.rootDir, 'routes/index'))(logger, Promise, database);
+var routes = require(path.join(global.__settings.rootDir, 'routes/index'))(logger, Promise, database, boss);
 
 
 // view engine setup
